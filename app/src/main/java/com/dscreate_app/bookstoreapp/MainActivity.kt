@@ -3,9 +3,13 @@ package com.dscreate_app.bookstoreapp
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,15 +45,38 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            val fireStore = Firebase.firestore
+            val storage = Firebase.storage.reference.child(CHILD_NAME_IMAGE)
+
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.PickVisualMedia()
+            ) { uri ->
+                if (uri == null) return@rememberLauncherForActivityResult
+
+                val task = storage
+                    .child("battletoads.jpg")
+                    .putBytes(bitmapToByteArray(this, uri))
+
+                task.addOnSuccessListener { uploadTask ->
+                    uploadTask.metadata?.reference?.downloadUrl?.addOnCompleteListener { taskUri ->
+                        saveBook(fireStore, taskUri.result.toString())
+                    }
+                }
+            }
+
+            MainScreen {
+                launcher.launch(
+                    PickVisualMediaRequest(
+                        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
         }
     }
 
     @Composable
-    fun MainScreen() {
-        val context = LocalContext.current
+    fun MainScreen(onClick: () -> Unit) {
         val fireStore = Firebase.firestore
-        val storage = Firebase.storage.reference.child(CHILD_NAME_IMAGE)
 
         val list = remember {
             mutableStateOf(emptyList<Book>())
@@ -104,15 +131,7 @@ class MainActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .padding(8.dp),
                 onClick = {
-                    val task = storage
-                        .child("battletoads2.jpg")
-                        .putBytes(bitmapToByteArray(context))
-
-                    task.addOnSuccessListener { uploadTask ->
-                        uploadTask.metadata?.reference?.downloadUrl?.addOnCompleteListener { taskUri ->
-                            saveBook(fireStore, taskUri.result.toString())
-                        }
-                    }
+                    onClick()
                 }
             ) {
                 Text(
@@ -122,8 +141,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun bitmapToByteArray(context: Context): ByteArray {
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.battletoads)
+    private fun bitmapToByteArray(context: Context, uri: Uri): ByteArray {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_IMAGE, baos)
         return baos.toByteArray()
