@@ -53,6 +53,8 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firestore)
+    implementation(libs.storage)
+    implementation(libs.coil)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
