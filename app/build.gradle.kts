@@ -54,6 +54,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firestore)
     implementation(libs.storage)
+    implementation(libs.firebase.auth)
+
     implementation(libs.coil)
 
     implementation(libs.androidx.core.ktx)
