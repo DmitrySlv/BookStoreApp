@@ -6,17 +6,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dscreate_app.bookstoreapp.ui.theme.ButtonColor
+import com.dscreate_app.bookstoreapp.ui.theme.ButtonColorPurple
 
 @Composable
 fun LoginButton(
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Button(
         modifier = Modifier.fillMaxWidth(0.5f),
         colors = ButtonDefaults.buttonColors(
-            containerColor = ButtonColor
+            containerColor = ButtonColorPurple
         ),
         onClick = { onClick() }
     ) {

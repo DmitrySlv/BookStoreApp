@@ -20,12 +20,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,12 +42,20 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun LoginScreen() {
-    val auth = Firebase.auth
+
+    val auth = remember {
+        Firebase.auth
+    }
 
     val emailState = remember {
         mutableStateOf("")
     }
+
     val passwordState = remember {
+        mutableStateOf("")
+    }
+
+    val errorState = remember {
         mutableStateOf("")
     }
 
@@ -53,6 +63,7 @@ fun LoginScreen() {
         modifier = Modifier.fillMaxSize(),
         painter = painterResource(id = R.drawable.bookstore),
         contentDescription = null,
+        alpha = 0.8f,
         contentScale = ContentScale.Crop
     )
     Box(
@@ -97,42 +108,92 @@ fun LoginScreen() {
             passwordState.value = it
         }
         Spacer(modifier = Modifier.height(10.dp))
-        LoginButton(text = "Войти") {
+        Box(
+            modifier = Modifier
+                .background(color = Color.White)
+                .alpha(0.7f)
+        ) {
+            if (errorState.value.isNotEmpty()) {
+                Text(
+                    modifier = Modifier
+                        .padding(
+                            top = 2.dp,
+                            bottom = 2.dp
+                        ),
+                    text = errorState.value,
+                    color = Color.Red,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
 
+        LoginButton(text = "Войти") {
+            signIn(
+                auth = auth,
+                email = emailState.value,
+                password = passwordState.value,
+                onSignInSuccess = {
+                    Log.d("MyLog", "Вход в аккаун прошел успешно!")
+                },
+                onSignInFailure = { error ->
+                    errorState.value = error
+                }
+            )
         }
         Spacer(modifier = Modifier.height(5.dp))
         LoginButton(text = "Регистрация") {
-
+            signUp(
+                auth = auth,
+                email = emailState.value,
+                password = passwordState.value,
+                onSignUpSuccess = {
+                    Log.d("MyLog", "Регистрация прошла успешно!")
+                },
+                onSignUpFailure = { error ->
+                   errorState.value = error
+                }
+            )
         }
     }
 }
 
-private fun signUp(
+fun signUp(
     auth: FirebaseAuth,
     email: String,
     password: String,
+    onSignUpSuccess: () -> Unit,
+    onSignUpFailure: (String) -> Unit,
 ) {
+    if (email.isBlank() || password.isBlank()) {
+        onSignUpFailure("Email и пароль не могут быть пустыми!")
+        return
+    }
     auth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener {
-            if (it.isSuccessful) {
-                Log.d("MyLog", "Sign Up is successful")
-            } else {
-                Log.d("MyLog", "Sign Up is failure!")
-            }
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) onSignUpSuccess()
+        }
+        .addOnFailureListener {
+            onSignUpFailure(it.message ?: "Ошибка регистрации аккаунта!")
         }
 }
 
-private fun signIn(
+fun signIn(
     auth: FirebaseAuth,
     email: String,
     password: String,
+    onSignInSuccess: () -> Unit,
+    onSignInFailure: (String) -> Unit,
 ) {
+    if (email.isBlank() || password.isBlank()) {
+        onSignInFailure("Email и пароль не могут быть пустыми!")
+        return
+    }
     auth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener {
-            if (it.isSuccessful) {
-                Log.d("MyLog", "Sign In is successful")
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSignInSuccess()
             } else {
-                Log.d("MyLog", "Sign In is failure!")
+               onSignInFailure("Ошибка входа в аккаунт!")
             }
         }
 }
@@ -161,3 +222,4 @@ private fun deleteAccount(
         }
     }
 }
+
