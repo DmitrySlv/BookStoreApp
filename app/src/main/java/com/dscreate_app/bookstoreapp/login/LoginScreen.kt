@@ -51,11 +51,11 @@ fun LoginScreen(
     }
 
     val emailState = remember {
-        mutableStateOf("")
+        mutableStateOf("dscreateapp@gmail.com")
     }
 
     val passwordState = remember {
-        mutableStateOf("")
+        mutableStateOf("123456789")
     }
 
     val errorState = remember {

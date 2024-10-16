@@ -22,7 +22,7 @@ import com.dscreate_app.bookstoreapp.R
 import com.dscreate_app.bookstoreapp.ui.theme.LightBlackColor
 
 @Composable
-fun DrawerHeader() {
+fun DrawerHeader(email: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -43,6 +43,11 @@ fun DrawerHeader() {
             color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = email,
+            color = Color.Gray,
+            fontSize = 16.sp
         )
     }
 }
