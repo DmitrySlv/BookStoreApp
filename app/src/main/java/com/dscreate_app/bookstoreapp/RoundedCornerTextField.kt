@@ -14,6 +14,8 @@ import com.dscreate_app.bookstoreapp.ui.theme.ButtonColor
 
 @Composable
 fun RoundedCornerTextField(
+    maxLines: Int = 1,
+    singleLine: Boolean = true,
     text: String,
     label: String,
     onValueChange: (String) -> Unit
@@ -37,6 +39,7 @@ fun RoundedCornerTextField(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent
         ),
-        singleLine = true
+        singleLine = singleLine,
+        maxLines = maxLines
     )
 }
