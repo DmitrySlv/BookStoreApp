@@ -1,6 +1,5 @@
 package com.dscreate_app.bookstoreapp.main_screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +35,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun DrawerBody() {
+fun DrawerBody(
+    onAdminClick: () -> Unit,
+) {
     val categoriesList = listOf(
         "Избранное",
         "Фэнтэзи",
@@ -76,7 +77,9 @@ fun DrawerBody() {
                     .fillMaxWidth()
                     .height(1.dp)
                     .background(LightBlackColor)
-            )
+            ) {
+
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -105,13 +108,18 @@ fun DrawerBody() {
                     }
                 }
             }
-          if (isAdminState.value) Button(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(5.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = DarkTransparentBlue),
-                onClick = {}
-            ) {
-                Text("Админ панель")
+            if (isAdminState.value) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = DarkTransparentBlue),
+                    onClick = {
+                        onAdminClick()
+                    }
+                ) {
+                    Text("Админ панель")
+                }
             }
         }
     }
@@ -125,6 +133,6 @@ fun DrawerBody() {
 fun isAdmin(onAdmin: (Boolean) -> Unit) {
     val uid = Firebase.auth.currentUser!!.uid
     Firebase.firestore.collection("admin").document(uid).get().addOnSuccessListener {
-            onAdmin(it.get("isAdmin") as Boolean)
-        }
+        onAdmin(it.get("isAdmin") as Boolean)
+    }
 }
