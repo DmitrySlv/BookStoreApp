@@ -13,20 +13,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.dscreate_app.bookstoreapp.R
+import com.dscreate_app.bookstoreapp.data.Book
 
 @Composable
-fun BookListItemUi() {
+fun BookListItemUi(book: Book) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
         AsyncImage(
-            model = R.drawable.bookstore,
+            model = book.imageUrl,
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
                 .height(250.dp)
@@ -35,20 +37,22 @@ fun BookListItemUi() {
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Властелин колец",
+            text = book.title,
             color = Color.Black,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "Описание",
+            text = book.description,
             color = Color.Gray,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis //Создает ... в описании и скрывает содержимое
         )
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "300 руб",
+            text = book.price,
             color = Color.Blue,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp
