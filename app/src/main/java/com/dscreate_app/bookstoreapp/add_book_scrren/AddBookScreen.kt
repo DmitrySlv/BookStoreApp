@@ -1,6 +1,8 @@
 package com.dscreate_app.bookstoreapp.add_book_scrren
 
+import android.content.ContentResolver
 import android.net.Uri
+import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +47,8 @@ import com.google.firebase.storage.ktx.storage
 fun AddBookScreen(
     onSaved: () -> Unit = {}
 ) {
+
+    val contentResolver = LocalContext.current.contentResolver
 
     var selectedCategory = "Бестселлеры"
 
@@ -144,23 +149,35 @@ fun AddBookScreen(
         }
         Spacer(modifier = Modifier.height(5.dp))
         LoginButton(text = "Сохранить") {
-            saveBookImage(
-                uri = selectedImageUri.value!!,
-                storage = storage,
-                fireStore = fireStore,
-                book =  Book(
+            saveBookToFireStore(
+                fireStore,
+                Book(
                     title = titleState.value,
                     description = descriptionState.value,
                     price = priceState.value,
-                    category = selectedCategory
+                    category = selectedCategory,
+                    imageUrl = imageToBase64(
+                        selectedImageUri.value!!,
+                        contentResolver
+                    )
                 ),
                 onSaved = {
                     onSaved()
                 },
-                onError = {}
+                onError = {
+                }
             )
         }
     }
+}
+
+private fun imageToBase64(uri: Uri, contentResolver: ContentResolver): String {
+    val inputStream = contentResolver.openInputStream(uri)
+
+    val bytes = inputStream?.readBytes()
+    return bytes?.let {
+        Base64.encodeToString(it, Base64.DEFAULT)
+    } ?: ""
 }
 
 private fun saveBookImage(
@@ -178,24 +195,22 @@ private fun saveBookImage(
     val uploadTask = storageRef.putFile(uri)
     uploadTask.addOnSuccessListener {
         storageRef.downloadUrl.addOnSuccessListener { url ->
-            saveBookToFireStore(
-                fireStore = fireStore,
-                url = url.toString(),
-                book = book,
-                onSaved = {
-                    onSaved()
-                },
-                onError = {
-                    onError()
-                }
-            )
+//            saveBookToFireStore(
+//                fireStore = fireStore,
+//                book = book,
+//                onSaved = {
+//                    onSaved()
+//                },
+//                onError = {
+//                    onError()
+//                }
+//            )
         }
     }
 }
 
 private fun saveBookToFireStore(
     fireStore: FirebaseFirestore,
-    url: String,
     book: Book,
     onSaved: () -> Unit,
     onError: () -> Unit,
@@ -205,8 +220,7 @@ private fun saveBookToFireStore(
     db.document(key)
         .set(
             book.copy(
-                key = key,
-                imageUrl = url
+                key = key
             )
         )
         .addOnSuccessListener {

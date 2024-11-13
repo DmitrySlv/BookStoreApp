@@ -1,5 +1,8 @@
 package com.dscreate_app.bookstoreapp.main_screen
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,8 +30,21 @@ fun BookListItemUi(book: Book) {
             .fillMaxWidth()
             .padding(16.dp)
     ) {
+        var bitmap: Bitmap? = null
+        try {
+            val base64Image = Base64.decode(book.imageUrl, Base64.DEFAULT)
+            bitmap = BitmapFactory.decodeByteArray(
+                base64Image,
+                0,
+                base64Image.size
+            )
+        } catch (e: Exception) {
+
+        }
+
+
         AsyncImage(
-            model = book.imageUrl,
+            model = bitmap ?: book.imageUrl,
             contentDescription = null,
             modifier = Modifier.fillMaxWidth()
                 .height(250.dp)
