@@ -31,6 +31,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.dscreate_app.bookstoreapp.LoginButton
 import com.dscreate_app.bookstoreapp.R
 import com.dscreate_app.bookstoreapp.RoundedCornerTextField
+import com.dscreate_app.bookstoreapp.add_book_scrren.data.AddScreenObj
 import com.dscreate_app.bookstoreapp.data.Book
 import com.dscreate_app.bookstoreapp.ui.theme.BoxFilterColor
 import com.google.firebase.firestore.FirebaseFirestore
@@ -42,21 +43,22 @@ import com.google.firebase.storage.ktx.storage
 @Preview(showBackground = true)
 @Composable
 fun AddBookScreen(
+    navData: AddScreenObj = AddScreenObj(),
     onSaved: () -> Unit = {}
 ) {
 
-    var selectedCategory = "Бестселлеры"
+    var selectedCategory = navData.category
 
     val titleState = remember {
-        mutableStateOf("")
+        mutableStateOf(navData.title)
     }
 
     val descriptionState = remember {
-        mutableStateOf("")
+        mutableStateOf(navData.description)
     }
 
     val priceState = remember {
-        mutableStateOf("")
+        mutableStateOf(navData.price)
     }
 
     val selectedImageUri = remember {

@@ -28,12 +28,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navData: MainScreenDataObj,
+    onBookEditClick: (Book) -> Unit,
     onAdminClick: () -> Unit,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val booksListState = remember {
         mutableStateOf(emptyList<Book>())
+    }
+
+    val isAdminState = remember {
+        mutableStateOf(false)
     }
 
     LaunchedEffect(Unit) {
@@ -51,7 +56,11 @@ fun MainScreen(
                 modifier = Modifier.fillMaxWidth(0.7f)
             ) {
                 DrawerHeader(navData.email)
-                DrawerBody {
+                DrawerBody(
+                    onAdmin = { isAdmin ->
+                        isAdminState.value = isAdmin
+                    }
+                ) {
                     coroutineScope.launch {
                         drawerState.close()
                     }
@@ -73,7 +82,12 @@ fun MainScreen(
                 columns = GridCells.Fixed(2),
             ) {
                 items(booksListState.value) { book ->
-                    BookListItemUi(book)
+                    BookListItemUi(
+                        isAdminState.value,
+                        book
+                    ) {
+                        onBookEditClick(it)
+                    }
                 }
             }
         }

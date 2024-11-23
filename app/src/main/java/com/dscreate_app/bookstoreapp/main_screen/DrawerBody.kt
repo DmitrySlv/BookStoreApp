@@ -36,7 +36,8 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun DrawerBody(
-    onAdminClick: () -> Unit,
+    onAdmin: (Boolean) -> Unit,
+    onAdminClick: () -> Unit
 ) {
     val categoriesList = listOf(
         "Избранное",
@@ -126,6 +127,7 @@ fun DrawerBody(
     LaunchedEffect(Unit) {
         isAdmin { isAdmin ->
             isAdminState.value = isAdmin
+            onAdmin(isAdmin)
         }
     }
 }

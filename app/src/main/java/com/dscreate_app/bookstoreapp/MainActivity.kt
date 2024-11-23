@@ -31,14 +31,26 @@ class MainActivity : ComponentActivity() {
                 }
                 composable<MainScreenDataObj> { navEntry ->
                     val navData = navEntry.toRoute<MainScreenDataObj>()
-                    MainScreen(navData) {
-                        navController.navigate(AddScreenObj)
-                    }
+                    MainScreen(
+                        navData,
+                        onBookEditClick = { book ->
+                            navController.navigate(AddScreenObj(
+                                key = book.key,
+                                title = book.title,
+                                description = book.description,
+                                price = book.price,
+                                category = book.category,
+                                imageUrl = book.imageUrl
+                            ))
+                        },
+                        onAdminClick = {
+                            navController.navigate(AddScreenObj())
+                        }
+                    )
                 }
                 composable<AddScreenObj> { navEntry ->
-                    AddBookScreen {
-                        navController.popBackStack()
-                    }
+                    val navData = navEntry.toRoute<AddScreenObj>()
+                    AddBookScreen(navData)
                 }
             }
         }
