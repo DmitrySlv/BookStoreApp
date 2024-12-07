@@ -44,10 +44,16 @@ import com.google.firebase.storage.ktx.storage
 @Composable
 fun AddBookScreen(
     navData: AddScreenObj = AddScreenObj(),
-    onSaved: () -> Unit = {}
+    onSaved: () -> Unit = {},
 ) {
 
-    var selectedCategory = navData.category
+    var selectedCategory = remember {
+        mutableStateOf(navData.category)
+    }
+
+    var navImageUrl = remember {
+        mutableStateOf(navData.imageUrl)
+    }
 
     val titleState = remember {
         mutableStateOf(navData.title)
@@ -76,12 +82,15 @@ fun AddBookScreen(
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
+        navImageUrl.value = ""
         selectedImageUri.value = uri
     }
 
     Image(
         modifier = Modifier.fillMaxSize(),
-        painter = rememberAsyncImagePainter(model = selectedImageUri.value),
+        painter = rememberAsyncImagePainter(
+            model = navImageUrl.value.ifEmpty { selectedImageUri.value }
+        ),
         contentDescription = null,
         alpha = 0.8f,
         contentScale = ContentScale.Crop
@@ -114,8 +123,8 @@ fun AddBookScreen(
             fontFamily = FontFamily.Serif
         )
         Spacer(modifier = Modifier.height(10.dp))
-        RoundedCornerDropDownMenu { selectedItem ->
-            selectedCategory = selectedItem
+        RoundedCornerDropDownMenu(selectedCategory.value) { selectedItem ->
+            selectedCategory.value = selectedItem
         }
         Spacer(modifier = Modifier.height(10.dp))
         RoundedCornerTextField(
@@ -146,26 +155,41 @@ fun AddBookScreen(
         }
         Spacer(modifier = Modifier.height(5.dp))
         LoginButton(text = "Сохранить") {
-            saveBookImage(
-                uri = selectedImageUri.value!!,
-                storage = storage,
-                fireStore = fireStore,
-                book =  Book(
-                    title = titleState.value,
-                    description = descriptionState.value,
-                    price = priceState.value,
-                    category = selectedCategory
-                ),
-                onSaved = {
-                    onSaved()
-                },
-                onError = {}
+          val book = Book(
+                key = navData.key,
+                title = titleState.value,
+                description = descriptionState.value,
+                price = priceState.value,
+                category = selectedCategory.value,
             )
+
+
+            if (selectedImageUri.value != null) {
+                saveBookImage(
+                   oldImageUrl = navData.imageUrl,
+                    uri = selectedImageUri.value!!,
+                    storage = storage,
+                    fireStore = fireStore,
+                    book = book,
+                    onSaved = {},
+                    onError =  {}
+                    )
+            } else {
+                saveBookToFireStore(
+                    fireStore = fireStore,
+                    book = book.copy(imageUrl = navData.imageUrl),
+                    onSaved = {
+                        onSaved()
+                    },
+                    onError = {}
+                )
+            }
         }
     }
 }
 
 private fun saveBookImage(
+    oldImageUrl: String,
     uri: Uri,
     storage: FirebaseStorage,
     fireStore: FirebaseFirestore,
@@ -174,16 +198,20 @@ private fun saveBookImage(
     onError: () -> Unit,
 ) {
     val timeStamp = System.currentTimeMillis()
-    val storageRef = storage.reference
-        .child("book_images")
-        .child("image_$timeStamp.jpg")
+    val storageRef = if (oldImageUrl.isEmpty()) {
+        storage.reference
+            .child("book_images")
+            .child("image_$timeStamp.jpg")
+    } else {
+        storage.getReferenceFromUrl(oldImageUrl)
+    }
+
     val uploadTask = storageRef.putFile(uri)
     uploadTask.addOnSuccessListener {
         storageRef.downloadUrl.addOnSuccessListener { url ->
             saveBookToFireStore(
                 fireStore = fireStore,
-                url = url.toString(),
-                book = book,
+                book = book.copy(imageUrl = url.toString()),
                 onSaved = {
                     onSaved()
                 },
@@ -197,7 +225,6 @@ private fun saveBookImage(
 
 private fun saveBookToFireStore(
     fireStore: FirebaseFirestore,
-    url: String,
     book: Book,
     onSaved: () -> Unit,
     onError: () -> Unit,
@@ -208,7 +235,6 @@ private fun saveBookToFireStore(
         .set(
             book.copy(
                 key = key,
-                imageUrl = url
             )
         )
         .addOnSuccessListener {

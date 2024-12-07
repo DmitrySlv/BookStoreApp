@@ -1,11 +1,9 @@
 package com.dscreate_app.bookstoreapp.add_book_scrren
 
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,11 +21,12 @@ import com.dscreate_app.bookstoreapp.ui.theme.ButtonColor
 
 @Composable
 fun RoundedCornerDropDownMenu(
-    onOptionSelected: (String) -> Unit
+    defCategory: String,
+    onOptionSelected: (String) -> Unit,
 ) {
     val expanded = remember { mutableStateOf(false) }
 
-    val selectedOption = remember { mutableStateOf("Выбрать жанр") }
+    val selectedOption = remember { mutableStateOf(defCategory) }
 
     val categoriesList = listOf(
         "Фэнтэзи",
