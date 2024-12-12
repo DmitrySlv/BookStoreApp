@@ -17,7 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.dscreate_app.bookstoreapp.data.Book
+import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
+import com.dscreate_app.bookstoreapp.add_book_scrren.models.Favourite
 import com.dscreate_app.bookstoreapp.login.data.MainScreenDataObj
 import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBar
 import com.google.firebase.Firebase
@@ -41,10 +42,15 @@ fun MainScreen(
         mutableStateOf(false)
     }
 
+    val dbState = remember {
+       Firebase.firestore
+    }
+
     LaunchedEffect(Unit) {
-        val db = Firebase.firestore
-        getAllBooks(db) { books ->
-            booksListState.value = books
+        getAllFavouritesIds(dbState, navData.uid) { favs ->
+            getAllBooks(dbState, favs) { books ->
+                booksListState.value = books
+            }
         }
     }
 
@@ -83,11 +89,27 @@ fun MainScreen(
             ) {
                 items(booksListState.value) { book ->
                     BookListItemUi(
-                        isAdminState.value,
-                        book
-                    ) {
-                        onBookEditClick(it)
-                    }
+                        showEditButton = isAdminState.value,
+                        book = book,
+                        onEditClick = {
+                            onBookEditClick(it)
+                        },
+                        onFavouriteClick = {
+                            booksListState.value = booksListState.value.map {
+                                if (it.key == book.key) {
+                                    onFavourites(
+                                        db = dbState,
+                                        uid = navData.uid,
+                                        favourite = Favourite(it.key),
+                                        isFavourite = !it.isFavourite
+                                    )
+                                    it.copy(isFavourite = !it.isFavourite)
+                                } else {
+                                    it
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -96,12 +118,60 @@ fun MainScreen(
 
 private fun getAllBooks(
     db: FirebaseFirestore,
+    idsList: List<String>,
     onBooks: (List<Book>) -> Unit,
 ) {
     db.collection("books")
         .get()
         .addOnSuccessListener { task ->
-            val booksList = task.toObjects(Book::class.java)
+            val booksList = task.toObjects(Book::class.java).map {
+                if (idsList.contains(it.key)) {
+                    it.copy(isFavourite = true)
+                } else {
+                    it
+                }
+            }
             onBooks(booksList)
         }
+}
+
+private fun getAllFavouritesIds(
+    db: FirebaseFirestore,
+    uid: String,
+    onFavourites: (List<String>) -> Unit,
+) {
+    db.collection("users")
+        .document(uid)
+        .collection("favourites")
+        .get()
+        .addOnSuccessListener { task ->
+            val idsList = task.toObjects(Favourite::class.java)
+            val keysList = mutableListOf<String>()
+
+            idsList.forEach {
+                keysList.add(it.key)
+            }
+            onFavourites(keysList)
+        }
+}
+
+private fun onFavourites(
+    db: FirebaseFirestore,
+    uid: String,
+    favourite: Favourite,
+    isFavourite: Boolean,
+) {
+    if (isFavourite) {
+        db.collection("users")
+            .document(uid)
+            .collection("favourites")
+            .document(favourite.key)
+            .set(favourite)
+    } else {
+        db.collection("users")
+            .document(uid)
+            .collection("favourites")
+            .document(favourite.key)
+            .delete()
+    }
 }

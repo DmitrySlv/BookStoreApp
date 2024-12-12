@@ -1,6 +1,9 @@
-package com.dscreate_app.bookstoreapp.data
+package com.dscreate_app.bookstoreapp.add_book_scrren.models
 
-data class Book(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AddScreenObj(
     val key: String = "",
     val title: String = "",
     val description: String = "",

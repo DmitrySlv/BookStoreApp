@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -24,14 +25,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.dscreate_app.bookstoreapp.R
-import com.dscreate_app.bookstoreapp.data.Book
+import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
 
 @Composable
 fun BookListItemUi(
     showEditButton: Boolean = false,
     book: Book,
-    onEditClick: (Book) -> Unit = {}
+    onEditClick: (Book) -> Unit = {},
+    onFavouriteClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -41,7 +42,8 @@ fun BookListItemUi(
         AsyncImage(
             model = book.imageUrl,
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(250.dp)
                 .clip(RoundedCornerShape(15.dp)),
             contentScale = ContentScale.Crop
@@ -84,7 +86,17 @@ fun BookListItemUi(
                     contentDescription = null
                 )
             }
+            IconButton(
+                onClick = {
+                    onFavouriteClick()
+                }
+            ) {
+                Icon(
+                    if (book.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    tint = Color.Red,
+                    contentDescription = null
+                )
+            }
         }
-
     }
 }

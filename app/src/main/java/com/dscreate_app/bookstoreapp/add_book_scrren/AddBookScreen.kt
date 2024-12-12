@@ -31,8 +31,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.dscreate_app.bookstoreapp.LoginButton
 import com.dscreate_app.bookstoreapp.R
 import com.dscreate_app.bookstoreapp.RoundedCornerTextField
-import com.dscreate_app.bookstoreapp.add_book_scrren.data.AddScreenObj
-import com.dscreate_app.bookstoreapp.data.Book
+import com.dscreate_app.bookstoreapp.add_book_scrren.models.AddScreenObj
+import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
 import com.dscreate_app.bookstoreapp.ui.theme.BoxFilterColor
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
