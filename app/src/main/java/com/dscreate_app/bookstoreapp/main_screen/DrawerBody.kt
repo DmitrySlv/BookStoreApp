@@ -37,7 +37,8 @@ import com.google.firebase.ktx.Firebase
 @Composable
 fun DrawerBody(
     onAdmin: (Boolean) -> Unit,
-    onAdminClick: () -> Unit
+    onAdminClick: () -> Unit,
+    onFavouriteClick: () -> Unit,
 ) {
     val categoriesList = listOf(
         "Избранное",
@@ -88,7 +89,9 @@ fun DrawerBody(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {}
+                            .clickable {
+                                onFavouriteClick()
+                            }
                     ) {
                         Text(
                             modifier = Modifier

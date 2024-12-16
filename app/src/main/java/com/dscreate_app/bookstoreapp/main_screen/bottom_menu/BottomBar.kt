@@ -10,7 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 
 @Composable
-fun BottomBar() {
+fun BottomBar(
+    onFavouritesClick: () -> Unit,
+    onHomeClick: () -> Unit,
+) {
     val items = listOf(
         BottomBarItem.Home,
         BottomBarItem.Favourite,
@@ -36,6 +39,10 @@ fun BottomBar() {
                 },
                 onClick = {
                     selectedItemState.value = item.title
+                    when(item.title) {
+                        BottomBarItem.Home.title -> onHomeClick()
+                        BottomBarItem.Favourite.title -> onFavouritesClick()
+                    }
                 }
             )
         }
