@@ -34,7 +34,9 @@ fun MainScreen(
     onAdminClick: () -> Unit,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
     val coroutineScope = rememberCoroutineScope()
+
     val booksListState = remember {
         mutableStateOf(emptyList<Book>())
     }
@@ -49,7 +51,7 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         getAllFavouritesIds(dbState, navData.uid) { favs ->
-            getAllBooks(dbState, favs) { books ->
+            getAllBooks(dbState, favs, "Фэнтэзи") { books ->
                 booksListState.value = books
             }
         }
@@ -83,6 +85,13 @@ fun MainScreen(
                             drawerState.close()
                         }
                     },
+                    onCategoryClick = { category ->
+                        getAllFavouritesIds(dbState, navData.uid) { favs ->
+                            getAllBooks(dbState, favs, category) { books ->
+                                booksListState.value = books
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -100,7 +109,7 @@ fun MainScreen(
                     },
                     onHomeClick = {
                         getAllFavouritesIds(dbState, navData.uid) { favs ->
-                            getAllBooks(dbState, favs) { books ->
+                            getAllBooks(dbState, favs, "Фэнтэзи") { books ->
                                 booksListState.value = books
                             }
                         }
@@ -146,9 +155,11 @@ fun MainScreen(
 private fun getAllBooks(
     db: FirebaseFirestore,
     idsList: List<String>,
+    category: String,
     onBooks: (List<Book>) -> Unit,
 ) {
     db.collection("books")
+        .whereEqualTo("category", category)
         .get()
         .addOnSuccessListener { task ->
             val booksList = task.toObjects(Book::class.java).map {
