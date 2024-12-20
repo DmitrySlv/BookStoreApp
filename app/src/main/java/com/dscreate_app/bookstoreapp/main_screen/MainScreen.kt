@@ -21,6 +21,7 @@ import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
 import com.dscreate_app.bookstoreapp.add_book_scrren.models.Favourite
 import com.dscreate_app.bookstoreapp.login.data.MainScreenDataObj
 import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBar
+import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBarItem
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,9 +50,13 @@ fun MainScreen(
         Firebase.firestore
     }
 
+    val selectedBottomCategoryState = remember {
+        mutableStateOf(BottomBarItem.Home.title)
+    }
+
     LaunchedEffect(Unit) {
         getAllFavouritesIds(dbState, navData.uid) { favs ->
-            getAllBooks(dbState, favs, "Фэнтэзи") { books ->
+            getAllBooks(dbState, favs) { books ->
                 booksListState.value = books
             }
         }
@@ -76,6 +81,8 @@ fun MainScreen(
                         onAdminClick()
                     },
                     onFavouriteClick = {
+                        selectedBottomCategoryState.value = BottomBarItem.Favourite.title
+
                         getAllFavouritesIds(dbState, navData.uid) { favs ->
                             getAllFavouriteBooks(dbState, favs) { books ->
                                 booksListState.value = books
@@ -86,10 +93,21 @@ fun MainScreen(
                         }
                     },
                     onCategoryClick = { category ->
+                        selectedBottomCategoryState.value = BottomBarItem.Home.title
+
                         getAllFavouritesIds(dbState, navData.uid) { favs ->
-                            getAllBooks(dbState, favs, category) { books ->
-                                booksListState.value = books
+                            if (category == "Разное") {
+                                getAllBooks(dbState, favs) { books ->
+                                    booksListState.value = books
+                                }
+                            } else {
+                                getAllBooksFromCategory(dbState, favs, category) { books ->
+                                    booksListState.value = books
+                                }
                             }
+                        }
+                        coroutineScope.launch {
+                            drawerState.close()
                         }
                     }
                 )
@@ -100,7 +118,10 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 BottomBar(
+                    selectedBottomCategory = selectedBottomCategoryState.value,
                     onFavouritesClick = {
+                        selectedBottomCategoryState.value = BottomBarItem.Favourite.title
+
                         getAllFavouritesIds(dbState, navData.uid) { favs ->
                             getAllFavouriteBooks(dbState, favs) { books ->
                                 booksListState.value = books
@@ -108,8 +129,10 @@ fun MainScreen(
                         }
                     },
                     onHomeClick = {
+                        selectedBottomCategoryState.value = BottomBarItem.Home.title
+
                         getAllFavouritesIds(dbState, navData.uid) { favs ->
-                            getAllBooks(dbState, favs, "Фэнтэзи") { books ->
+                            getAllBooks(dbState, favs) { books ->
                                 booksListState.value = books
                             }
                         }
@@ -144,6 +167,10 @@ fun MainScreen(
                                     it
                                 }
                             }
+                            if (selectedBottomCategoryState.value == BottomBarItem.Favourite.title) {
+                                booksListState.value =
+                                    booksListState.value.filter { it.isFavourite }
+                            }
                         }
                     )
                 }
@@ -152,7 +179,7 @@ fun MainScreen(
     }
 }
 
-private fun getAllBooks(
+private fun getAllBooksFromCategory(
     db: FirebaseFirestore,
     idsList: List<String>,
     category: String,
@@ -160,6 +187,25 @@ private fun getAllBooks(
 ) {
     db.collection("books")
         .whereEqualTo("category", category)
+        .get()
+        .addOnSuccessListener { task ->
+            val booksList = task.toObjects(Book::class.java).map {
+                if (idsList.contains(it.key)) {
+                    it.copy(isFavourite = true)
+                } else {
+                    it
+                }
+            }
+            onBooks(booksList)
+        }
+}
+
+private fun getAllBooks(
+    db: FirebaseFirestore,
+    idsList: List<String>,
+    onBooks: (List<Book>) -> Unit,
+) {
+    db.collection("books")
         .get()
         .addOnSuccessListener { task ->
             val booksList = task.toObjects(Book::class.java).map {

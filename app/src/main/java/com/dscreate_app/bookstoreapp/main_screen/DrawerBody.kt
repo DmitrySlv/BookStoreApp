@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dscreate_app.bookstoreapp.R
+import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBarItem
 import com.dscreate_app.bookstoreapp.ui.theme.DarkTransparentBlue
 import com.dscreate_app.bookstoreapp.ui.theme.LightBlackColor
 import com.google.firebase.auth.ktx.auth
@@ -39,10 +40,11 @@ fun DrawerBody(
     onAdmin: (Boolean) -> Unit,
     onAdminClick: () -> Unit,
     onFavouriteClick: () -> Unit,
-    onCategoryClick: (String) -> Unit
+    onCategoryClick: (String) -> Unit,
 ) {
     val categoriesList = listOf(
         "Избранное",
+        "Разное",
         "Фэнтэзи",
         "Драма",
         "Бестселлеры"
@@ -50,6 +52,10 @@ fun DrawerBody(
 
     val isAdminState = remember {
         mutableStateOf(false)
+    }
+
+    val selectedCategory = remember {
+        mutableStateOf(BottomBarItem.Home.title)
     }
 
     Box(
@@ -91,7 +97,8 @@ fun DrawerBody(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                if(categoriesList[0] == item) {
+                                if (categoriesList[0] == item) {
+                                    selectedCategory.value = BottomBarItem.Favourite.title
                                     onFavouriteClick()
                                 } else {
                                     onCategoryClick(item)
