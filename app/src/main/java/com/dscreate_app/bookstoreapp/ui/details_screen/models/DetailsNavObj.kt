@@ -1,13 +1,12 @@
-package com.dscreate_app.bookstoreapp.add_book_scrren.models
+package com.dscreate_app.bookstoreapp.ui.details_screen.models
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddScreenObj(
-    val key: String = "",
+data class DetailsNavObj(
     val title: String = "",
     val description: String = "",
     val price: String = "",
     val category: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
 )

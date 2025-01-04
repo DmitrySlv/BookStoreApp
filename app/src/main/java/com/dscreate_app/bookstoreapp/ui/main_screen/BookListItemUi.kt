@@ -1,5 +1,6 @@
-package com.dscreate_app.bookstoreapp.main_screen
+package com.dscreate_app.bookstoreapp.ui.main_screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,19 +26,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.models.Book
 
 @Composable
 fun BookListItemUi(
     showEditButton: Boolean = false,
     book: Book,
     onEditClick: (Book) -> Unit = {},
-    onFavouriteClick: () -> Unit = {}
+    onFavouriteClick: () -> Unit = {},
+    onBookClick: (Book) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .clickable { onBookClick(book) }
     ) {
         AsyncImage(
             model = book.imageUrl,

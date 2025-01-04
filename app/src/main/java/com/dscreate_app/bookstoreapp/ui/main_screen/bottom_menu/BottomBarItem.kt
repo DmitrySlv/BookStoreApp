@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.main_screen.bottom_menu
+package com.dscreate_app.bookstoreapp.ui.main_screen.bottom_menu
 
 import com.dscreate_app.bookstoreapp.R
 

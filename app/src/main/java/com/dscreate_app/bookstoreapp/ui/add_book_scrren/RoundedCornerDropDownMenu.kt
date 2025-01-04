@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.add_book_scrren
+package com.dscreate_app.bookstoreapp.ui.add_book_scrren
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

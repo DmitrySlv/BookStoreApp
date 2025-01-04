@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">BookStoreApp</string>
+    <string name="book_detail_description">«Властели́н коле́ц» (англ. The Lord of the Rings) — роман-эпопея английского писателя Дж. Р. Р. Толкина, одно из самых известных произведений жанра фэнтези. «Властелин колец» был написан как единая книга, но из-за объёма при первом издании его разделили на три части — «Братство Кольца», «Две крепости» и «Возвращение короля». В виде трилогии он публикуется и по сей день, хотя часто в едином томе. Роман считается первым произведением жанра эпическое фэнтези, а также его классикой.«Властелин колец» — одна из самых известных и популярных книг XX века. Книга переведена по меньшей мере на 38 языков. Она оказала огромное влияние на литературу в жанре фэнтези, на настольные и компьютерные игры, на кинематограф и вообще на мировую культуру. Под влиянием работ профессора Толкина появилось движение толкинистов. Большим успехом пользуется и экранизация книги, созданная режиссёром Питером Джексоном.</string>
+    <string name="book_detail_title">Властелин колец</string>
+    <string name="book_detail_category_title">Категория:</string>
+    <string name="book_detail_author_title">Автор:</string>
+    <string name="book_detail_author">J. R. R. Tolkien</string>
+    <string name="book_detail_data_realise_title">Дата выхода:</string>
+    <string name="book_detail_data_realise">16.02.1954</string>
+    <string name="book_detail_data_score_title">Оценка:</string>
+    <string name="book_detail_data_score">4.8</string>
+    <string name="book_detail_price_title_template">Купить: %s</string>
+    <string name="add_book">Добавить книгу</string>
+    <string name="title">Заголовок</string>
+    <string name="description">Описание</string>
+    <string name="price">Цена</string>
+    <string name="choose_image">Выбрать изображение</string>
+    <string name="save">Сохранить</string>
+    <string name="book_store">Книжный магазин</string>
+    <string name="email_title">Email</string>
+    <string name="password_title">Password</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_up_failure_desc">Email и пароль не могут быть пустыми!</string>
+    <string name="sign_in_failure_desc">Email и пароль не могут быть пустыми!</string>
+    <string name="sign_in_failure">Ошибка входа в аккаунт!</string>
+    <string name="sign_up_failure">Ошибка регистрации аккаунта!</string>
+    <string name="drawer_body_categories">Категории</string>
+    <string name="admin_panel">Админ панель</string>
 </resources>

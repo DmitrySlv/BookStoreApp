@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.add_book_scrren
+package com.dscreate_app.bookstoreapp.ui.add_book_scrren
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -22,17 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.dscreate_app.bookstoreapp.LoginButton
+import com.dscreate_app.bookstoreapp.ui.LoginButton
 import com.dscreate_app.bookstoreapp.R
-import com.dscreate_app.bookstoreapp.RoundedCornerTextField
-import com.dscreate_app.bookstoreapp.add_book_scrren.models.AddScreenObj
-import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
+import com.dscreate_app.bookstoreapp.ui.RoundedCornerTextField
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.models.AddScreenObj
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.models.Book
 import com.dscreate_app.bookstoreapp.ui.theme.BoxFilterColor
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -116,7 +117,7 @@ fun AddBookScreen(
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Добавить книгу",
+            text = stringResource(R.string.add_book),
             color = Color.White,
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
@@ -129,7 +130,7 @@ fun AddBookScreen(
         Spacer(modifier = Modifier.height(10.dp))
         RoundedCornerTextField(
             text = titleState.value,
-            label = "Заголовок"
+            label = stringResource(R.string.title)
         ) {
             titleState.value = it
         }
@@ -138,23 +139,23 @@ fun AddBookScreen(
             maxLines = 5,
             singleLine = false,
             text = descriptionState.value,
-            label = "Описание"
+            label = stringResource(R.string.description)
         ) {
             descriptionState.value = it
         }
         Spacer(modifier = Modifier.height(10.dp))
         RoundedCornerTextField(
             text = priceState.value,
-            label = "Цена"
+            label = stringResource(R.string.price)
         ) {
             priceState.value = it
         }
         Spacer(modifier = Modifier.height(10.dp))
-        LoginButton(text = "Выбрать изображение") {
+        LoginButton(text = stringResource(R.string.choose_image)) {
             imageLauncher.launch("image/*")
         }
         Spacer(modifier = Modifier.height(5.dp))
-        LoginButton(text = "Сохранить") {
+        LoginButton(text = stringResource(R.string.save)) {
           val book = Book(
                 key = navData.key,
                 title = titleState.value,

@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.main_screen
+package com.dscreate_app.bookstoreapp.ui.main_screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,11 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import com.dscreate_app.bookstoreapp.add_book_scrren.models.Book
-import com.dscreate_app.bookstoreapp.add_book_scrren.models.Favourite
-import com.dscreate_app.bookstoreapp.login.data.MainScreenDataObj
-import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBar
-import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBarItem
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.models.Book
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.models.Favourite
+import com.dscreate_app.bookstoreapp.ui.login_screen.models.MainScreenDataObj
+import com.dscreate_app.bookstoreapp.ui.main_screen.bottom_menu.BottomBar
+import com.dscreate_app.bookstoreapp.ui.main_screen.bottom_menu.BottomBarItem
+import com.dscreate_app.bookstoreapp.ui.main_screen.drawer_menu.DrawerBody
+import com.dscreate_app.bookstoreapp.ui.main_screen.drawer_menu.DrawerHeader
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,6 +40,7 @@ fun MainScreen(
     navData: MainScreenDataObj,
     onBookEditClick: (Book) -> Unit,
     onAdminClick: () -> Unit,
+    onBookClick: (Book) -> Unit,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -177,6 +180,9 @@ fun MainScreen(
                     BookListItemUi(
                         showEditButton = isAdminState.value,
                         book = book,
+                        onBookClick = { bookItem ->
+                            onBookClick(bookItem)
+                        },
                         onEditClick = {
                             onBookEditClick(it)
                         },

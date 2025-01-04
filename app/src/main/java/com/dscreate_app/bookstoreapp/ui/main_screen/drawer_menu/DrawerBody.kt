@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.main_screen
+package com.dscreate_app.bookstoreapp.ui.main_screen.drawer_menu
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,11 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dscreate_app.bookstoreapp.R
-import com.dscreate_app.bookstoreapp.main_screen.bottom_menu.BottomBarItem
+import com.dscreate_app.bookstoreapp.ui.main_screen.bottom_menu.BottomBarItem
 import com.dscreate_app.bookstoreapp.ui.theme.DarkTransparentBlue
 import com.dscreate_app.bookstoreapp.ui.theme.LightBlackColor
 import com.google.firebase.auth.ktx.auth
@@ -76,7 +77,7 @@ fun DrawerBody(
         ) {
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
-                text = "Категории",
+                text = stringResource(R.string.drawer_body_categories),
                 fontSize = 20.sp,
                 color = Color.Blue,
                 fontWeight = FontWeight.Bold
@@ -135,7 +136,7 @@ fun DrawerBody(
                         onAdminClick()
                     }
                 ) {
-                    Text("Админ панель")
+                    Text(stringResource(R.string.admin_panel))
                 }
             }
         }

@@ -1,5 +1,6 @@
-package com.dscreate_app.bookstoreapp.login
+package com.dscreate_app.bookstoreapp.ui.login_screen
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,40 +12,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dscreate_app.bookstoreapp.LoginButton
 import com.dscreate_app.bookstoreapp.R
-import com.dscreate_app.bookstoreapp.RoundedCornerTextField
-import com.dscreate_app.bookstoreapp.login.data.MainScreenDataObj
+import com.dscreate_app.bookstoreapp.ui.LoginButton
+import com.dscreate_app.bookstoreapp.ui.RoundedCornerTextField
+import com.dscreate_app.bookstoreapp.ui.login_screen.models.MainScreenDataObj
 import com.dscreate_app.bookstoreapp.ui.theme.BoxFilterColor
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+
 @Composable
 fun LoginScreen(
-    onNavigateToMainScreen: (MainScreenDataObj) -> Unit
+    onNavigateToMainScreen: (MainScreenDataObj) -> Unit,
 ) {
+    val context = LocalContext.current
 
     val auth = remember {
         Firebase.auth
@@ -90,7 +90,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Книжный магазин",
+            text = stringResource(R.string.book_store),
             color = Color.White,
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
@@ -99,14 +99,14 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(10.dp))
         RoundedCornerTextField(
             text = emailState.value,
-            label = "Email"
+            label = stringResource(R.string.email_title)
         ) {
             emailState.value = it
         }
         Spacer(modifier = Modifier.height(10.dp))
         RoundedCornerTextField(
             text = passwordState.value,
-            label = "Password"
+            label = stringResource(R.string.password_title)
         ) {
             passwordState.value = it
         }
@@ -130,8 +130,9 @@ fun LoginScreen(
             }
         }
 
-        LoginButton(text = "Войти") {
+        LoginButton(text = stringResource(R.string.sign_in)) {
             signIn(
+                context = context,
                 auth = auth,
                 email = emailState.value,
                 password = passwordState.value,
@@ -144,8 +145,9 @@ fun LoginScreen(
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
-        LoginButton(text = "Регистрация") {
+        LoginButton(text = stringResource(R.string.sign_up)) {
             signUp(
+                context = context,
                 auth = auth,
                 email = emailState.value,
                 password = passwordState.value,
@@ -153,7 +155,7 @@ fun LoginScreen(
                     onNavigateToMainScreen(navData)
                 },
                 onSignUpFailure = { error ->
-                   errorState.value = error
+                    errorState.value = error
                 }
             )
         }
@@ -161,6 +163,7 @@ fun LoginScreen(
 }
 
 fun signUp(
+    context: Context,
     auth: FirebaseAuth,
     email: String,
     password: String,
@@ -168,7 +171,7 @@ fun signUp(
     onSignUpFailure: (String) -> Unit,
 ) {
     if (email.isBlank() || password.isBlank()) {
-        onSignUpFailure("Email и пароль не могут быть пустыми!")
+        onSignUpFailure(context.getString(R.string.sign_up_failure_desc))
         return
     }
     auth.createUserWithEmailAndPassword(email, password)
@@ -183,11 +186,12 @@ fun signUp(
             }
         }
         .addOnFailureListener {
-            onSignUpFailure(it.message ?: "Ошибка регистрации аккаунта!")
+            onSignUpFailure(it.message ?: context.getString(R.string.sign_up_failure))
         }
 }
 
 fun signIn(
+    context: Context,
     auth: FirebaseAuth,
     email: String,
     password: String,
@@ -195,7 +199,7 @@ fun signIn(
     onSignInFailure: (String) -> Unit,
 ) {
     if (email.isBlank() || password.isBlank()) {
-        onSignInFailure("Email и пароль не могут быть пустыми!")
+        onSignInFailure(context.getString(R.string.sign_in_failure_desc))
         return
     }
     auth.signInWithEmailAndPassword(email, password)
@@ -208,7 +212,7 @@ fun signIn(
                     )
                 )
             } else {
-               onSignInFailure("Ошибка входа в аккаунт!")
+                onSignInFailure(context.getString(R.string.sign_in_failure))
             }
         }
 }

@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp
+package com.dscreate_app.bookstoreapp.ui
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth

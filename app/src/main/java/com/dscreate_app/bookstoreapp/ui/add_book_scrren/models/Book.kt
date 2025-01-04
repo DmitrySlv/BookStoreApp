@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.add_book_scrren.models
+package com.dscreate_app.bookstoreapp.ui.add_book_scrren.models
 
 data class Book(
     val key: String = "",

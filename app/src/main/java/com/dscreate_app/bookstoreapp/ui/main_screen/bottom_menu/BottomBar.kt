@@ -1,4 +1,4 @@
-package com.dscreate_app.bookstoreapp.main_screen.bottom_menu
+package com.dscreate_app.bookstoreapp.ui.main_screen.bottom_menu
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

@@ -7,12 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.dscreate_app.bookstoreapp.add_book_scrren.AddBookScreen
-import com.dscreate_app.bookstoreapp.add_book_scrren.models.AddScreenObj
-import com.dscreate_app.bookstoreapp.login.LoginScreen
-import com.dscreate_app.bookstoreapp.login.data.LoginScreenObject
-import com.dscreate_app.bookstoreapp.login.data.MainScreenDataObj
-import com.dscreate_app.bookstoreapp.main_screen.MainScreen
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.AddBookScreen
+import com.dscreate_app.bookstoreapp.ui.add_book_scrren.models.AddScreenObj
+import com.dscreate_app.bookstoreapp.ui.details_screen.models.DetailsNavObj
+import com.dscreate_app.bookstoreapp.ui.details_screen.DetailsScreen
+import com.dscreate_app.bookstoreapp.ui.login_screen.LoginScreen
+import com.dscreate_app.bookstoreapp.ui.login_screen.models.LoginScreenObject
+import com.dscreate_app.bookstoreapp.ui.login_screen.models.MainScreenDataObj
+import com.dscreate_app.bookstoreapp.ui.main_screen.MainScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,23 +36,38 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         navData,
                         onBookEditClick = { book ->
-                            navController.navigate(AddScreenObj(
+                            navController.navigate(
+                                AddScreenObj(
                                 key = book.key,
                                 title = book.title,
                                 description = book.description,
                                 price = book.price,
                                 category = book.category,
                                 imageUrl = book.imageUrl
-                            ))
+                            )
+                            )
                         },
                         onAdminClick = {
                             navController.navigate(AddScreenObj())
+                        },
+                        onBookClick = { bookItem ->
+                            navController.navigate(DetailsNavObj(
+                                title = bookItem.title,
+                                description = bookItem.description,
+                                price = bookItem.price,
+                                category = bookItem.category,
+                                imageUrl = bookItem.imageUrl
+                            ))
                         }
                     )
                 }
                 composable<AddScreenObj> { navEntry ->
                     val navData = navEntry.toRoute<AddScreenObj>()
                     AddBookScreen(navData)
+                }
+                composable<DetailsNavObj> { navEntry ->
+                    val navData = navEntry.toRoute<DetailsNavObj>()
+                    DetailsScreen(navData)
                 }
             }
         }
